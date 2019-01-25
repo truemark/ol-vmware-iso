@@ -10,16 +10,16 @@ cd $DIR
 mkdir -p ISOTMP
 
 # You must have the Install ISO from oracle in same directory as the script
-if [ ! -f "V921569-01.iso" ]; then
+if [ ! -f "ol-7.iso" ]; then
         echo "Original OL7 Install ISO must be in the same directory as this script"
         exit 1
 fi
 
-cp V921569-01.iso ./ISOTMP/
+cp ol-7.iso ./ISOTMP/
 cd ISOTMP
 sudo mkdir -p /mnt/cdrom
-sudo mount -o loop V921569-01.iso /mnt/cdrom
-rm -rf image
+sudo mount -o loop ol-7.iso /mnt/cdrom
+sudo rm -rf image
 mkdir -p image
 rsync -av /mnt/cdrom/ image/
 sudo umount /mnt/cdrom
@@ -30,7 +30,8 @@ cp ../minimum-ks.cfg image/ks.cfg
 cd image/isolinux/
 chmod 755 .
 chmod 644 isolinux.cfg
-sudo sed -i 's/  append initrd=initrd.img inst.stage2=hd:LABEL=OL-7.4\\x20Server.x86_64 rd.live.check quiet/  append initrd=initrd.img ks=cdrom:\/ks.cfg inst.txt quiet/' isolinux.cfg
+sudo sed -i 's/timeout 600/timeout 6/' isolinux.cfg
+sudo sed -i 's/  append initrd=initrd.img inst.stage2=hd:LABEL=OL-7.* rd.live.check quiet/  append initrd=initrd.img ks=cdrom:\/ks.cfg inst.txt quiet/' isolinux.cfg
 cd ../../
 sudo find image -type d -exec chmod 755 {} \;
 sudo find image -type f -exec chmod 644 {} \;
